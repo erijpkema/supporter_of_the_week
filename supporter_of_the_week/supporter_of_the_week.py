@@ -1,8 +1,5 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-
-"""
 
 import argparse
 import datetime
@@ -14,12 +11,15 @@ from icalendar import Calendar, Event
 from workalendar.europe import Netherlands
 
 
-class SupportCalendar(object):
-    """ """
+class SupportCalendar():
+    """
+    Represents a support calendar.
+    """
 
     def __init__(self):
         """__init__."""
         self.cal = Netherlands()
+        self.table = []
 
     def skip_holiday(self, day: datetime.date, backwards=False) -> datetime.date:
         """
@@ -42,6 +42,7 @@ class SupportCalendar(object):
     ):
         """main.
         Make a schedule and load it onto the class.
+
 
         :param supporters:
         :type supporters: list
@@ -75,7 +76,6 @@ class SupportCalendar(object):
             "ScheduleRow", ["weeknr", "supporter", "first_workday", "last_workday"]
         )
 
-        self.table = []
         while day < end:
             first_workday = self.skip_holiday(day)
             # last_workday is friday or the first non holiday looking backwards.
@@ -92,15 +92,14 @@ class SupportCalendar(object):
                     last_workday.strftime("%d/%m"),
                 )
             )
-            #   f'| {day.isocalendar().week:<4} | {supporter:<10} | {first_workday.strftime("%d/%m %Y")} | {last_workday.strftime("%d/%m")} |'
             day += datetime.timedelta(days=7)
             event = Event()
             event.add("dtstart", first_workday)
             # Microsoft outlook shows the event as if it ends one day before
             # the end date.
             event.add("dtend", last_workday + datetime.timedelta(days=1))
-            event.add("summary", "{} is supporter of the week".format(supporter))
-            event.add("description", "{} is supporter of the week".format(supporter))
+            event.add("summary", f"{supporter} is supporter of the week")
+            event.add("description", f"{supporter} is supporter of the week")
 
             event["uid"] = event_id
             event_id += 1
