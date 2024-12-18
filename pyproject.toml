@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "supporter-of-the-week"
+version = "0.1.1"
+description = "Supporter of the Week project"
+authors = ["Egon Rijpkema <git@egonrijpkema.nl>"]
+readme = "README.md"
+license = "GNU GPLv3"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+icalendar = "^6.1.0"
+workalendar = "^17.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+supporter_of_the_week = "supporter_of_the_week:main"
