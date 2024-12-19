@@ -1,6 +1,12 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Ops teams often drop all tasks at hand when there are incidents or requets for help.
+This might not be the most efficient way to handle this.
+supporter_of_the_week creates a schedule with a team member on call to do first response.
+"""
+
 import argparse
 import datetime
 from itertools import cycle
@@ -16,28 +22,7 @@ class SupportCalendar():
     Represents a support calendar.
     """
 
-    def __init__(self):
-        """__init__."""
-        self.cal = Netherlands()
-        self.table = []
-
-    def skip_holiday(self, day: datetime.date, backwards=False) -> datetime.date:
-        """
-        Advance day until day without public holiday is found
-
-        :param day:
-        :type day: datetime.date
-        :param backwards:
-        :rtype: datetime.date
-        """
-        if self.cal.is_working_day(day):
-            return day
-        # if reversed, delta is backwards.
-        return self.skip_holiday(
-            day + datetime.timedelta(days=-1 if backwards else 1), backwards=backwards
-        )
-
-    def make_schedule(
+    def __init__(
         self, supporters: list, shuffle_supporters: bool = False, start_date: str = None
     ):
         """main.
@@ -51,6 +36,10 @@ class SupportCalendar():
         :param start_week:
         :type start_week: int
         """
+
+        self.cal = Netherlands()
+
+        self.table = []
 
         today = datetime.date.today().isocalendar()
 
@@ -108,6 +97,23 @@ class SupportCalendar():
 
             self.ical = ical.to_ical()
 
+    def skip_holiday(self, day: datetime.date, backwards=False) -> datetime.date:
+        """
+        Advance day until day without public holiday is found
+
+        :param day:
+        :type day: datetime.date
+        :param backwards:
+        :rtype: datetime.date
+        """
+        if self.cal.is_working_day(day):
+            return day
+        # if reversed, delta is backwards.
+        return self.skip_holiday(
+            day + datetime.timedelta(days=-1 if backwards else 1), backwards=backwards
+        )
+
+
     @property
     def markdown(self) -> str:
         """
@@ -154,6 +160,10 @@ class SupportCalendar():
 
 
 def main():
+    """
+    Parse arguments, print markdown table.
+    Write MS Outlook compatible ical file.
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -183,8 +193,7 @@ def main():
     args = parser.parse_args()
     args.supporters = args.supporters.split(",")
 
-    calendar = SupportCalendar()
-    calendar.make_schedule(**vars(args))
+    calendar = SupportCalendar(**vars(args))
     print(calendar.markdown)
     with open("supporters.ical", "wb") as f:
         f.write(calendar.ical)
