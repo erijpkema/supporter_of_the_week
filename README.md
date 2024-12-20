@@ -16,3 +16,10 @@ pipx install supporter_of_the_week
 ```bash
 usage: supporter_of_the_week [-h] [--start-date START_DATE ('%d-%m-%Y')] --supporters SUPPORTERS [--shuffle]
 ```
+
+## Web version
+I've experimented with [Pyodide](https://pyodide.org) to create a web assembly [web version](https://supporter.egonrijpkema.nl/).
+It runs entirely in the browser.
+
+## Limitations
+For now the module only works for the Netherlands. So the schedule will not be accurate for other countries.
