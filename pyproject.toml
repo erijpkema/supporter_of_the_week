@@ -11,6 +11,9 @@ python = "^3.12"
 icalendar = "^6.1.0"
 workalendar = "^17.0.0"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
