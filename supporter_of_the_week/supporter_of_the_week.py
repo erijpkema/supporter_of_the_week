@@ -9,21 +9,25 @@ supporter_of_the_week creates a schedule with a team member on call to do first 
 
 import argparse
 import datetime
+from collections import namedtuple
 from itertools import cycle
 from random import randint, shuffle
 
-from collections import namedtuple
 from icalendar import Calendar, Event
 from workalendar.europe import Netherlands
 
 
-class SupportCalendar():
+class SupportCalendar:
     """
     Represents a support calendar.
     """
 
     def __init__(
-        self, supporters: list, shuffle_supporters: bool = False, start_date: str = None
+        self,
+        supporters: list,
+        shuffle_supporters: bool = False,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ):
         """main.
         Make a schedule and load it onto the class.
@@ -33,7 +37,8 @@ class SupportCalendar():
         :type supporters: list
         :param shuffle_supporters:
         :type shuffle_supporters: bool
-        :param start_week:
+        :param start_date:
+        :param end_date:
         :type start_week: int
         """
 
@@ -50,7 +55,12 @@ class SupportCalendar():
         else:
             start = datetime.datetime.strptime(start_date, "%d-%m-%Y").date()
 
-        end = datetime.date.fromisocalendar(year=today.year + 1, week=today.week, day=5)
+        if end_date is None:
+            end = datetime.date.fromisocalendar(
+                year=today.year + 1, week=today.week, day=5
+            )
+        else:
+            end = datetime.datetime.strptime(end_date, "%d-%m-%Y").date()
 
         if shuffle_supporters:
             shuffle(supporters)
@@ -95,7 +105,7 @@ class SupportCalendar():
 
             ical.add_component(event)
 
-            self.ical = ical.to_ical()
+        self.ical = ical.to_ical()
 
     def skip_holiday(self, day: datetime.date, backwards=False) -> datetime.date:
         """
@@ -113,7 +123,6 @@ class SupportCalendar():
             day + datetime.timedelta(days=-1 if backwards else 1), backwards=backwards
         )
 
-
     @property
     def markdown(self) -> str:
         """
@@ -123,7 +132,9 @@ class SupportCalendar():
         table.append("|------|------|------|------|")
         for row in self.table:
             table.append(
-                f"| {row.weeknr:<3} | {row.supporter} | {row.first_workday} | {row.last_workday} |"
+                f"| {row.weeknr:<3} | {row.supporter} | {row.first_workday} | {
+                    row.last_workday
+                } |"
             )
         return "\n".join(table)
 
@@ -171,6 +182,14 @@ def main():
         type=str,
         dest="start_date",
         help="date for first week in calendar'%d-%m-%Y'",
+        required=False,
+    )
+
+    parser.add_argument(
+        "--end-date",
+        type=str,
+        dest="end_date",
+        help="date for last week in calendar'%d-%m-%Y'",
         required=False,
     )
 
